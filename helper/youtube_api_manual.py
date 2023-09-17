@@ -1,6 +1,7 @@
 import json
 import os
-
+#AIzaSyBV-xNj0ro6wVIgx0B8-ylBwoNkI612rZk
+#AIzaSyBV-xNj0ro6wVIgx0B8-ylBwoNkI612rZk
 # необходимо установить через: pip install google-api-python-client
 from googleapiclient.discovery import build
 
