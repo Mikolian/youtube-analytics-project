@@ -3,10 +3,14 @@ import os
 from googleapiclient.discovery import build
 
 
-api_key: str = os.getenv('YT_API_KEY')
+class MixinApi:
+    @classmethod
+    def get_service(cls):
+        api_key: str = os.getenv('YT_API_KEY')
+        youtube = build('youtube', 'v3', developerKey=api_key)
+        return youtube
 
-
-class Video:
+class Video(MixinApi):
     """
     Инициализация реальными данными следующих атрибутов экземпляра класса Video:
     id видео,
@@ -27,11 +31,6 @@ class Video:
 
     def __str__(self):
         return f"{self.title_video}"
-
-    @classmethod
-    def get_service(cls):
-        youtube = build('youtube', 'v3', developerKey=api_key)
-        return youtube
 
     def fill_channel_data(self):
         """Подтягиваем недостающие данные из API"""
