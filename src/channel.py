@@ -12,11 +12,33 @@ class Channel:
         self.channel_id = channel_id
         self.title = None
         self.description = None
-        self.channel_url = None
+        self.url = None
         self.subscriber_count = None
         self.video_count = None
         self.view_count = None
         self.fill_channel_data()
+
+    def __str__(self):
+        return f"{self.title} ({self.url})"
+
+    def __add__(self,other):
+        return self.subscriber_count + other.subscriber_count
+
+    def __sub__(self,other):
+        return self.subscriber_count - other.subscriber_count
+
+    def __gt__(self, other):
+        return self.subscriber_count > other.subscriber_count
+
+    def __ge__(self,other):
+        return self.subscriber_count >= other.subscriber_count
+
+    def __lt__(self, other):
+        return self.subscriber_count < other.subscriber_count
+
+    def __le__(self, other):
+        return self.subscriber_count <= other.subscriber_count
+
     def print_info(self):
         """Выводит в консоль информацию о канале."""
         channel = self.get_service().channels().list(id=self.channel_id, part='snippet,statistics').execute()
