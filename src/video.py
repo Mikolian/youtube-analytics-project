@@ -3,12 +3,18 @@ import os
 from googleapiclient.discovery import build
 
 
+class InfoFromAPI(Exception):
+    def __init__(self):
+        self.message = "Несуществующий id видео"
+
+
 class MixinApi:
     @classmethod
     def get_service(cls):
         api_key: str = os.getenv('YT_API_KEY')
         youtube = build('youtube', 'v3', developerKey=api_key)
         return youtube
+
 
 class Video(MixinApi):
     """
@@ -20,26 +26,34 @@ class Video(MixinApi):
     количество лайков
 """
 
-    def __init__(self, id_video):
+    def __init__(self, id_video=None):
         """Инициализируем по id_video"""
         self.id_video = id_video
-        self.title_video = None
-        self.url_video = None
-        self.view_count = None
-        self.likes_count = None
-        self.fill_channel_data()
+        try:
+            self.fill_channel_data()
+        except InfoFromAPI as m:
+            print(m.message)
+            self.title = None
+            self.url_video = None
+            self.view_count = None
+            self.like_count = None
 
     def __str__(self):
-        return f"{self.title_video}"
+        """Реализуем метод согласно заданию """
+        return f"{self.title}"
 
     def fill_channel_data(self):
         """Подтягиваем недостающие данные из API"""
         response = self.get_service().videos().list(id=self.id_video, part='statistics, snippet').execute()
-        video = response['items'][0]
-        self.title_video = video['snippet']['title']
-        self.url_video = f"http://www.youtube.com/watch?v={self.id_video}"
-        self.likes_count = int(video['statistics']['likeCount'])
-        self.view_count = int(video['statistics']['viewCount'])
+        if response['pageInfo']['totalResults'] != 0:
+            video = response['items'][0]
+            self.title = video['snippet']['title']
+            self.url_video = f"http://www.youtube.com/watch?v={self.id_video}"
+            self.like_count = int(video['statistics']['likeCount'])
+            self.view_count = int(video['statistics']['viewCount'])
+        else:
+            raise InfoFromAPI
+
 
 
 class PLVideo(Video):
